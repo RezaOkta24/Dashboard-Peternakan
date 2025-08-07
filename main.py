@@ -82,9 +82,9 @@ elif menu == "📊 Dashboard Data Pertanian":
     # Mapping RW berdasarkan RT
     def map_rt_to_rw(rt):
         if rt in [34, 35]:
-            return "RW 17"
+            return "17"
         elif rt in [36, 37]:
-            return "RW 18"
+            return "18"
         else:
             return "Lainnya"
 
@@ -147,3 +147,4 @@ elif menu == "📊 Dashboard Data Pertanian":
         values=total_all.values,
     )
     st.plotly_chart(fig_pie, use_container_width=True)
+
