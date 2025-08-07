@@ -79,28 +79,7 @@ if menu == "📖 Profil Padukuhan Besole":
 elif menu == "📊 Dashboard Data Pertanian":
     st.title("📊 Dashboard Pendataan Peternak Warga")
 
-    st.sidebar.header("🔎 Filter Data")
-    selected_rt = st.sidebar.multiselect(
-        "Pilih RT", 
-        options=sorted(data_peternak["RT"].unique()), 
-        default=sorted(data_peternak["RT"].unique())
-    )
-
-    filtered_data = data_peternak[data_peternak["RT"].isin(selected_rt)]
-
-    st.subheader("📄 Data Peternak")
-    st.dataframe(filtered_data, use_container_width=True)
-
-    # Bar chart total ternak per RT
-    st.subheader("📊 Total Ternak per RT")
-    fig_rt = px.bar(
-        total_per_rt[total_per_rt["RT"].isin(selected_rt)],
-        x="RT", y=["Sapi", "Kambing", "Ayam"],
-        barmode="group",
-    )
-    st.plotly_chart(fig_rt, use_container_width=True)
-
-    # Tambah kolom RW berdasarkan RT
+    # Mapping RW berdasarkan RT
     def map_rt_to_rw(rt):
         if rt in [34, 35]:
             return "RW 17"
@@ -111,11 +90,48 @@ elif menu == "📊 Dashboard Data Pertanian":
 
     data_peternak["RW"] = data_peternak["RT"].apply(map_rt_to_rw)
 
-    # Hitung total ternak per RW
-    total_per_rw = data_peternak.groupby("RW")[["Sapi", "Kambing", "Ayam"]].sum().reset_index()
+    # === Sidebar ===
+    st.sidebar.header("🔎 Filter Data")
 
-    # Tampilkan bar chart per RW
+    # Pilihan mode filter
+    filter_mode = st.sidebar.radio(
+        "Filter berdasarkan:", ["RW", "RT"]
+    )
+
+    # Filter data berdasarkan pilihan
+    if filter_mode == "RW":
+        selected_rw = st.sidebar.multiselect(
+            "Pilih RW", 
+            options=sorted(data_peternak["RW"].unique()),
+            default=sorted(data_peternak["RW"].unique())
+        )
+        filtered_data = data_peternak[data_peternak["RW"].isin(selected_rw)]
+
+    elif filter_mode == "RT":
+        selected_rt = st.sidebar.multiselect(
+            "Pilih RT",
+            options=sorted(data_peternak["RT"].unique()),
+            default=sorted(data_peternak["RT"].unique())
+        )
+        filtered_data = data_peternak[data_peternak["RT"].isin(selected_rt)]
+
+    # === Dataframe ===
+    st.subheader("📄 Data Peternak")
+    st.dataframe(filtered_data, use_container_width=True)
+
+    # === Bar chart per RT ===
+    st.subheader("📊 Total Ternak per RT")
+    total_per_rt = filtered_data.groupby("RT")[["Sapi", "Kambing", "Ayam"]].sum().reset_index()
+    fig_rt = px.bar(
+        total_per_rt,
+        x="RT", y=["Sapi", "Kambing", "Ayam"],
+        barmode="group",
+    )
+    st.plotly_chart(fig_rt, use_container_width=True)
+
+    # === Bar chart per RW ===
     st.subheader("🏘️ Total Ternak per RW")
+    total_per_rw = filtered_data.groupby("RW")[["Sapi", "Kambing", "Ayam"]].sum().reset_index()
     fig_rw = px.bar(
         total_per_rw,
         x="RW", y=["Sapi", "Kambing", "Ayam"],
@@ -123,9 +139,9 @@ elif menu == "📊 Dashboard Data Pertanian":
     )
     st.plotly_chart(fig_rw, use_container_width=True)
 
-    # Pie chart total keseluruhan
+    # === Pie chart total ===
     st.subheader("🥧 Distribusi Ternak Keseluruhan")
-    total_all = total_keseluruhan.iloc[0, 0:]
+    total_all = filtered_data[["Sapi", "Kambing", "Ayam"]].sum()
     fig_pie = px.pie(
         names=total_all.index,
         values=total_all.values,
