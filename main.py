@@ -33,7 +33,7 @@ if menu == "📖 Profil Padukuhan Besole":
     st.markdown("## 📖 Profil Padukuhan Besole")
 
     st.markdown("""
-    **Padukuhan Besole** terletak di Kelurahan **Purwoharjo**, Kecamatan **Samigaluh**, Kabupaten **Kulon Progo**, DIY.
+    **Padukuhan Besole** terletak di Kalurahan **Purwoharjo**, Kapanewon **Samigaluh**, Kabupaten **Kulon Progo**, DIY.
     Berada di ketinggian sekitar **500 meter di atas permukaan laut**, wilayah ini dikelilingi oleh alam yang **asri dan hijau**.
 
     ### 🧭 Batas Wilayah
@@ -147,4 +147,5 @@ elif menu == "📊 Dashboard Data Pertanian":
         values=total_all.values,
     )
     st.plotly_chart(fig_pie, use_container_width=True)
+
 
